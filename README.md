@@ -1,4 +1,4 @@
-# gpiokey - A GPIO-to-Keypress and Display Power Management Daemon
+# gpiokey - A GPIO-to-Keypress and Display Power Management Daemon for Raspberry Pi
 
 The `gpiokey` utility is a daemon for use with Raspbian, intended to be
 launched from your X11 session manager's auto-start file. It performs two
@@ -35,7 +35,7 @@ after your X11 session is up and running.
 
 The command line syntax for `gpiokey` is as follows:
 
-   gpiokey [-b minutes] [-i keySym] [-n] { gpioPin [~] [+|-] keySym }
+    gpiokey [-b minutes] [-i keySym] [-n] [-h] { gpioPin [~] [+|-] keySym }
 
 In the above, `[]` indicates optional items, `{}` indicates items that can be
 repeated zero or more times, and `|` means "either/or".
@@ -57,9 +57,7 @@ will return immediately, but the daemon will continue to run in the background.
 If the `-n` option is given, then `gpiokey` will remain in the foreground until
 you terminate it by pressing `Ctrl+C`.
 
-The _timeout_ argument specifies the time, in minutes, that the system must be
-idle before the display is turned off. If this feature is not desired, use an
-idle time of 0.
+The `-h` option displays a summary of the command line syntax.
 
 The remaining arguments specify zero or more GPIO pins to monitor for input
 and transform into keyboard events (whatever application is running in the
@@ -99,9 +97,10 @@ ensure the pin is high when a button is not pressed, the internal pull-up
 resistors are required.
 
 The following invocation of `gpiokey` supports the above scenario, with a 20
-minute screen blanking timeout:
+minute screen blanking timeout, and sends a left shift key if one of the
+buttons is pressed while the screen is blank:
 
-    gpiokey 20 23 ~ + Left 25 ~ + Right
+    gpiokey -b 20 -i Shift_L 23 ~ + Left 25 ~ + Right
 
 More buttons corresponding to more keys can easily be added (up to 28 depending
 on the model of Raspberry Pi).
