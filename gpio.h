@@ -22,13 +22,19 @@
 
 /* Configures the specified GPIO pin (BCM numbering) as an input, optionally
    with negative logic (a low input is considered active), and optionally with
-   the internal pull-up (pud > 0) or pull-down (pud < 0) resistor enabled.
-   Returns false and sets *err to point to an error message on failure. */
+   the internal pull-up (pud > 0) or pull-down (pud < 0) resistor enabled. The
+   key should be a single-character string, or a word corresponding to one of
+   the XK_ definitions in the /usr/include/X11/keysymdef.h file. Returns false
+   and sets *err to point to an error message on failure. */
 extern bool ConfigureInputPin( int pin, bool neg, int pud, const char *key,
 			       const char **err );
 
+/* Sets the key to be sent if a configured GPIO input becomes active while the
+   system is idle (screen is blank). */
+extern bool ConfigureIdleKey( const char *key, const char **err );
+
 /* Scans all configured GPIO pins, producing a key-down event when one becomes
    active, and a key-up event when it becomes inactive. */
-extern void ScanInputPins( void );
+extern void ScanInputPins( bool screenOn );
 
 #endif

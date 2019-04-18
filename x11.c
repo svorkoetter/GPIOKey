@@ -70,3 +70,21 @@ void SendKeyCode( KeyCode keyCode, bool pressed )
     if( disp != NULL )
 	XTestFakeKeyEvent(disp,keyCode,pressed,0);
 }
+
+/* Based on code found at https://superuser.com/questions/638357 */
+
+/* Return user idle time in milliseconds. */
+int IdleTime( void )
+{
+    Display *disp = openDisplay();
+    if( disp == NULL )
+        return( -1 );
+
+    int event_base, error_base;
+    if( !XScreenSaverQueryExtension(disp,&event_base,&error_base) )
+	return( -2 );
+
+    XScreenSaverInfo info;
+    XScreenSaverQueryInfo(disp,DefaultRootWindow(disp),&info);
+    return( info.idle );
+}

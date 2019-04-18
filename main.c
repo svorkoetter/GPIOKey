@@ -32,36 +32,48 @@
 #include "gpio.h"
 #include "x11.h"
 
-/* Command line options (in the form expected by getopt). */
-#define OPTIONS "hn"
-
 static void usage( FILE *fp )
 {
     /* Print usage information and exit. */
-    fprintf(fp,"Usage: gpiokey [-%s] { gpioPin [~] [+|-] keySym }\n\n",OPTIONS);
-    fprintf(fp,"-h\t- display help\n");
+    fprintf(fp,"Usage: gpiokey [-b min] [-i key] [-n] [-h] { gpioPin [~] [+|-] keySym }\n\n");
+    fprintf(fp,"-b min\t- blank screen after this many minutes of idle time (1 to 10000)\n");
+    fprintf(fp,"-i key\t- send the specified key for GPIO events occurring when idle\n");
     fprintf(fp,"-n\t- do not become a daemon, remain in the foreground\n");
-    fprintf(fp,"\ngpioPin\t- BCM GPIO pin number (not physical or WiringPi) to scan for input\n");
+    fprintf(fp,"-h\t- display this help\n\n");
+    fprintf(fp,"gpioPin\t- BCM GPIO pin number (not physical or WiringPi) to scan for input\n");
     fprintf(fp,"~\t- indicates input is negative logic (active-low)\n");
     fprintf(fp,"+ or -\t- activates internal pull-up or -down resistor\n");
     fprintf(fp,"keySym\t- specifies X11 key symbol associated with the pin\n");
     if( fp == stderr )
-	exit(1);
+    exit(1);
 }
 
 int main( int argc, char **argv )
 {
+    const char *msg;
+
     /* Process command line options. */
     bool optDaemonize = true;
-    int c;
-    while( (c = getopt(argc,argv,OPTIONS)) != -1 ) {
+    int c, optTimeout = 0;
+
+    while( (c = getopt(argc,argv,"b:i:nh")) != -1 ) {
 	switch( c ) {
-	case 'h':
-	    usage(stdout);
-	    return( 0 );
+	case 'b':
+	    if( (optTimeout = atoi(optarg)) < 1 || optTimeout > 10000 )
+	        usage(stderr);
+	    break;
+	case 'i':
+	    if( !ConfigureIdleKey(optarg,&msg) ) {
+	        fprintf(stderr,"gpiokey: %s\n",msg);
+		return( 1 );
+	    }
+	    break;
 	case 'n':
 	    optDaemonize = false;
 	    break;
+	case 'h':
+	    usage(stdout);
+	    return( 0 );
 	default:
 	    usage(stderr);
 	}
@@ -98,7 +110,6 @@ int main( int argc, char **argv )
 	if( strcmp(keyStr,"++") == 0 || strcmp(keyStr,"--") == 0 || strcmp(keyStr,"~~") == 0 )
 	    ++keyStr;
 
-	const char *msg;
 	if( !ConfigureInputPin(pin,neg,res,keyStr,&msg) ) {
 	    fprintf(stderr,"gpiokey: GPIO error with pin %d: %s\n",pin,msg);
 	    return( 1 );
@@ -111,9 +122,26 @@ int main( int argc, char **argv )
 	return( 1 );
     }
 
+    /* Ensure screen is in a known state initially. */
+    system("vcgencmd display_power 1");
+    bool screenOn = true;
+
     for( ;; ) {
 	/* Scan GPIO inputs, generating key-down and key-up events. */
-	ScanInputPins();
+	ScanInputPins(screenOn);
+
+	/* Blank screen after idle timeout. Unblank when no longer idle. */
+	if( optTimeout != 0 ) {
+	    int idle = IdleTime();
+	    if( screenOn && idle >= optTimeout ) {
+		system("vcgencmd display_power 0");
+		screenOn = false;
+	    }
+	    else if( !screenOn && idle < optTimeout ) {
+		system("vcgencmd display_power 1");
+		screenOn = true;
+	    }
+	}
 
 	/* Sleep for approximately 20ms between scans to minimize CPU usage and
 	   provide debouncing, yet still give sufficiently fast response. */

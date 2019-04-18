@@ -31,4 +31,8 @@ extern KeyCode StringToKeyCode( const char *key, const char **err );
 /* Send a key-down or key-up event for the specified key code. */
 extern void SendKeyCode( KeyCode keyCode, bool down );
 
+/* Returns X11 user idle time (time since last keyboard or mouse activity) in
+   milliseconds. */
+extern int IdleTime( void );
+
 #endif

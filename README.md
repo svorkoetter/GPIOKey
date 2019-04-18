@@ -1,4 +1,4 @@
-# GPIOKey - A GPIO-to-Keypress and Display Power Management Daemon
+# gpiokey - A GPIO-to-Keypress and Display Power Management Daemon
 
 GPIOKey is a daemon for use with Raspbian Jessie or newer, intended to be
 launched from your X11 session manager's auto-start file. It performs two

@@ -37,6 +37,13 @@ static struct pinMap {
     bool pressed;
 } pinMap[NUM_PINS];
 
+static KeyCode idleKey = 0;
+
+bool ConfigureIdleKey( const char *key, const char **err )
+{
+    return( (idleKey = StringToKeyCode(key,err)) != 0 );
+}
+
 bool ConfigureInputPin( int pin, bool neg, int pud, const char *key,
 		        const char **err )
 {
@@ -74,7 +81,7 @@ bool ConfigureInputPin( int pin, bool neg, int pud, const char *key,
     return( true );
 }
 
-void ScanInputPins( void )
+void ScanInputPins( bool screenOn )
 {
     for( int pin = 0; pin < NUM_PINS; ++pin ) {
 	if( pinMap[pin].keyCode ) {
@@ -86,8 +93,14 @@ void ScanInputPins( void )
 		if( read(fd,&value,1) == 1 ) {
 		    bool pressed = (value == '1') ^ pinMap[pin].neg;
 		    if( pressed != pinMap[pin].pressed ) {
-			pinMap[pin].pressed = pressed;
-			SendKeyCode(pinMap[pin].keyCode,pressed);
+			if( pressed && !screenOn && idleKey ) {
+			    SendKeyCode(idleKey,true);
+			    SendKeyCode(idleKey,false);
+			}
+			else {
+			    pinMap[pin].pressed = pressed;
+			    SendKeyCode(pinMap[pin].keyCode,pressed);
+			}
 		    }
 		}
 	        close(fd);
