@@ -61,6 +61,7 @@ int main( int argc, char **argv )
 	case 'b':
 	    if( (optTimeout = atoi(optarg)) < 1 || optTimeout > 10000 )
 	        usage(stderr);
+	    optTimeout *= 60000;
 	    break;
 	case 'i':
 	    if( !ConfigureIdleKey(optarg,&msg) ) {
