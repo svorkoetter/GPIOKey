@@ -12,7 +12,6 @@ installed by default):
 
 * libx11-6
 * libxtst6
-* libraspberrypi-bin for the `vcgencmd` utility
 * WiringPi for the `gpio` utility
 
 If you want to rebuild `gpiokey` from source, you will also need the following:
