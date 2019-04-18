@@ -1,4 +1,4 @@
-# gpiokey - GPIO to Key Press Daemon
+# gpiokey - Raspberry Pi GPIO to Key Press Daemon
 
 The `gpiokey` utility is a daemon for use with Raspbian, intended to be
 launched from your X11 session manager's auto-start file. It monitors a
