@@ -1,6 +1,6 @@
 # gpiokey - A GPIO-to-Keypress and Display Power Management Daemon
 
-GPIOKey is a daemon for use with Raspbian Jessie or newer, intended to be
+The `gpiokey` utility is a daemon for use with Raspbian, intended to be
 launched from your X11 session manager's auto-start file. It performs two
 separate yet somewhat related functions:
 
@@ -8,9 +8,6 @@ separate yet somewhat related functions:
   and key-up events.
 * Monitors X11 idle time (no input from the keyboard, mouse, or monitored GPIO
   pins), and turns off the display when idle.
-
-GPIOKey is written in C, and is distributed as source code under the terms of
-the GNU General Public License.
 
 ## System Requirements
 
@@ -101,7 +98,7 @@ sends a low signal to the respective pin, so this is active-low logic. To
 ensure the pin is high when a button is not pressed, the internal pull-up
 resistors are required.
 
-The following invocation of GPIOKey supports the above scenario, with a 20
+The following invocation of `gpiokey` supports the above scenario, with a 20
 minute screen blanking timeout:
 
     gpiokey 20 23 ~ + Left 25 ~ + Right
