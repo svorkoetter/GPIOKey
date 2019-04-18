@@ -95,17 +95,3 @@ void ScanInputPins( void )
 	}
     }
 }
-
-void RestoreGPIO( void )
-{
-    /* Turn off any pull up/down resistors we turned on. */
-    for( int pin = 0; pin < NUM_PINS; ++pin ) {
-        if( pinMap[pin].keyCode ) {
-	    char cmd[100];
-	    sprintf(cmd,"gpio -g mode %d tri",pin);
-	    system(cmd);
-	    sprintf(cmd,"gpio unexport %d",pin);
-	    system(cmd);
-	}
-    }
-}
