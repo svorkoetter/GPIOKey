@@ -7,7 +7,7 @@ events.
 
 ## System Requirements
 
-The following libraries are used by `gpiokey` (some of these might already be
+The following libraries and utilities are used by `gpiokey` (some of these might already be
 installed by default):
 
 * libx11-6
