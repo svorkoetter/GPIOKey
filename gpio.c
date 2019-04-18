@@ -35,6 +35,7 @@ static struct pinMap {
     bool neg;
     KeyCode keyCode;
     bool pressed;
+    bool wasIdle;
 } pinMap[NUM_PINS];
 
 static KeyCode idleKey = 0;
@@ -57,6 +58,7 @@ bool ConfigureInputPin( int pin, bool neg, int pud, const char *key,
 	    pinMap[i].neg = false;
 	    pinMap[i].keyCode = 0;
 	    pinMap[i].pressed = false;
+	    pinMap[i].wasIdle = false;
 	}
 	initialized = true;
     }
@@ -69,7 +71,6 @@ bool ConfigureInputPin( int pin, bool neg, int pud, const char *key,
         return( false );
 
     pinMap[pin].neg = neg;
-    pinMap[pin].pressed = false;
 
     char cmd[100];
     sprintf(cmd,"gpio export %d in",pin);
@@ -93,14 +94,15 @@ void ScanInputPins( bool screenOn )
 		if( read(fd,&value,1) == 1 ) {
 		    bool pressed = (value == '1') ^ pinMap[pin].neg;
 		    if( pressed != pinMap[pin].pressed ) {
-			if( pressed && !screenOn && idleKey ) {
-			    SendKeyCode(idleKey,true);
-			    SendKeyCode(idleKey,false);
+			if( pressed && !screenOn && idleKey
+			 || !pressed && pinMap[pin].wasIdle )
+			{
+			    SendKeyCode(idleKey,pressed);
+			    pinMap[pin].wasIdle = pressed;
 			}
-			else {
-			    pinMap[pin].pressed = pressed;
+			else
 			    SendKeyCode(pinMap[pin].keyCode,pressed);
-			}
+			pinMap[pin].pressed = pressed;
 		    }
 		}
 	        close(fd);
