@@ -59,11 +59,11 @@ you terminate it by pressing `Ctrl+C`.
 
 The `-h` option displays a summary of the command line syntax.
 
+### GPIO Pin to Key Mapping
+
 The remaining arguments specify zero or more GPIO pins to monitor for input
 and transform into keyboard events (whatever application is running in the
 foreground will think you have pressed the corresponding key on the keyboard).
-
-### GPIO Pin to Key Mapping
 
 Each pin is specified by two to four arguments as follows:
 
