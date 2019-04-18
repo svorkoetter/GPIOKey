@@ -63,6 +63,8 @@ The remaining arguments specify zero or more GPIO pins to monitor for input
 and transform into keyboard events (whatever application is running in the
 foreground will think you have pressed the corresponding key on the keyboard).
 
+### GPIO Pin to Key Mapping
+
 Each pin is specified by two to four arguments as follows:
 
 * The _gpioPin_ refers to the BCM GPIO pin number (not the non-standard
